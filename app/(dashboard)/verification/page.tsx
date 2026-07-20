@@ -48,15 +48,27 @@ const VERIFICATION_STATS = [
 export default function VerificationPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   const ITEMS_PER_PAGE = 10;
 
   // Search filter
-  const filteredRequests = VERIFICATION_REQUESTS.filter((req) =>
-    `${req.name} ${req.businessName} ${req.email} ${req.category}`
-      .toLowerCase()
-      .includes(search.toLowerCase()),
-  );
+  // const filteredRequests = VERIFICATION_REQUESTS.filter((req) =>
+  //   `${req.name} ${req.businessName} ${req.email} ${req.category}`
+  //     .toLowerCase()
+  //     .includes(search.toLowerCase()),
+  // );
+  const filteredRequests = VERIFICATION_REQUESTS.filter((req) => {
+    const matchesSearch =
+      `${req.name} ${req.businessName} ${req.email} ${req.category}`
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchesStatus = statusFilter === "All" || req.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   // Pagination
   const totalPages = Math.ceil(filteredRequests.length / ITEMS_PER_PAGE);
@@ -128,7 +140,7 @@ export default function VerificationPage() {
               />
             </div>
 
-            <button
+            {/* <button
               className="
               h-11 px-4 rounded-md 
               border border-hairline 
@@ -141,7 +153,39 @@ export default function VerificationPage() {
             >
               Filter
               <ChevronDown size={14} className="text-subtle" />
-            </button>
+            </button> */}
+            <div className="relative">
+              <button
+                onClick={() => setShowStatusMenu(!showStatusMenu)}
+                className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
+              >
+                Status
+                {statusFilter !== "All" && (
+                  <span className="bg-brand-pinkDeep text-white text-[10px] px-2 py-0.5 rounded-full">
+                    {statusFilter}
+                  </span>
+                )}
+                <ChevronDown size={14} className="text-subtle" />
+              </button>
+
+              {showStatusMenu && (
+                <div className="absolute top-12 right-0 w-44 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
+                  {["All", "Pending", "Approved", "Rejected"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => {
+                        setStatusFilter(status);
+                        setPage(1);
+                        setShowStatusMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-muted"
+                    >
+                      {status === "All" ? "All Status" : status}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </Card>
 
@@ -254,11 +298,7 @@ export default function VerificationPage() {
                         <Button
                           asChild
                           size="sm"
-                          className="
-                        bg-brand-gradient
-                        text-white
-                        hover:opacity-90
-                        "
+                          className=" bg-brand-gradient text-white  hover:opacity-90"
                         >
                           <Link href={`/verification/${req.id}`}>✓ Review</Link>
                         </Button>

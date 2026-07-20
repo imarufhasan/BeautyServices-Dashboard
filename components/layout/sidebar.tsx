@@ -23,9 +23,19 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/users", label: "Users", icon: Users },
-  { href: "/verification", label: "Verification", icon: ShieldCheck, badge: 23 },
+  {
+    href: "/verification",
+    label: "Verification",
+    icon: ShieldCheck,
+    badge: 23,
+  },
   { href: "/bookings", label: "Bookings", icon: CalendarCheck },
-  { href: "/refunds", label: "Cancellation & Refund", icon: RotateCcw, badge: 47 },
+  {
+    href: "/refunds",
+    label: "Cancellation & Refund",
+    icon: RotateCcw,
+    badge: 47,
+  },
   { href: "/finance", label: "Finance", icon: Wallet },
   { href: "/content", label: "Content", icon: FileText },
   { href: "/reviews", label: "Reviews", icon: Star },
@@ -88,20 +98,22 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-hairline">
-        <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 hover:bg-muted transition-colors">
+      <Link href="/profile" className="p-3 border-t border-hairline block">
+        <div className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 hover:bg-muted transition-colors">
           <div className="w-9 h-9 rounded-full bg-brand-gradient flex items-center justify-center text-white text-xs font-bold">
             AO
           </div>
+
           <div className="flex-1 text-left">
             <p className="text-xs font-bold text-ink leading-none">
               Alex O&apos;Brien
             </p>
             <p className="text-[10px] text-subtle mt-1">Super Admin</p>
           </div>
+
           <ChevronRight size={15} className="text-subtle" />
-        </button>
-      </div>
+        </div>
+      </Link>
     </aside>
   );
 }

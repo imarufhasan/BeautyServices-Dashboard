@@ -47,14 +47,31 @@ const STATUS_VARIANT: Record<
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
 
+  const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
   const ITEMS_PER_PAGE = 10;
 
-  const filteredUsers = USERS.filter((user) =>
+  const filteredUsers2 = USERS.filter((user) =>
     `${user.name} ${user.email} ${user.phone} ${user.role} ${user.status}`
       .toLowerCase()
       .includes(search.toLowerCase()),
   );
+  const filteredUsers = USERS.filter((user) => {
+    const matchesSearch =
+      `${user.name} ${user.email} ${user.phone} ${user.role} ${user.status}`
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchesRole = roleFilter === "All" || user.role === roleFilter;
+
+    const matchesStatus =
+      statusFilter === "All" || user.status === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
 
@@ -96,14 +113,79 @@ export default function UsersPage() {
               placeholder="Search users by name or email..."
             />
           </div>
-          <button className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted">
-            Role
-            <ChevronDown size={14} className="text-subtle" />
-          </button>
-          <button className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted">
-            Status
-            <ChevronDown size={14} className="text-subtle" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowRoleMenu(!showRoleMenu);
+                setShowStatusMenu(false);
+              }}
+              className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
+            >
+              Role
+              {roleFilter !== "All" && (
+                <span className="bg-brand-pinkDeep text-white text-[10px] px-2 py-0.5 rounded-full">
+                  {roleFilter}
+                </span>
+              )}
+              <ChevronDown size={14} className="text-subtle" />
+            </button>
+
+            {showRoleMenu && (
+              <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
+                {["All", "Customer", "Artist"].map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => {
+                      setRoleFilter(role);
+                      setPage(1);
+                      setShowRoleMenu(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-muted "
+                  >
+                    {role === "All" ? "All Roles" : role}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowStatusMenu(!showStatusMenu);
+                setShowRoleMenu(false);
+              }}
+              className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
+            >
+              Status
+              {statusFilter !== "All" && (
+                <span className="bg-success text-white text-[10px] px-2 py-0.5 rounded-full">
+                  {statusFilter}
+                </span>
+              )}
+              <ChevronDown size={14} className="text-subtle" />
+            </button>
+
+            {showStatusMenu && (
+              <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
+                {["All", "Active", "Pending", "Suspended", "Paused"].map(
+                  (status) => (
+                    <button
+                      key={status}
+                      onClick={() => {
+                        setStatusFilter(status);
+                        setPage(1);
+                        setShowStatusMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2  rounded-lg text-xs font-semibold hover:bg-muted"
+                    >
+                      {status === "All" ? "All Status" : status}
+                    </button>
+                    
+                  ),
+                )}
+              </div>
+            )}
+          </div>
         </Card>
 
         <Card className="p-0 overflow-hidden">

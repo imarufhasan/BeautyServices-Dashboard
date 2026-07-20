@@ -1,8 +1,6 @@
 export const VERIFICATION_REQUESTS = [
-  // Existing VF-3301 to VF-3312 remain same
-
   {
-    id: "VF-3313",
+    id: "VF-3301",
     name: "Sophie Miller",
     email: "sophie.miller@glambeauty.com",
     initials: "SM",
@@ -16,7 +14,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3314",
+    id: "VF-3302",
     name: "Isabella Taylor",
     email: "isabella.taylor@hairlux.com",
     initials: "IT",
@@ -30,7 +28,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3315",
+    id: "VF-3303",
     name: "Amara Joseph",
     email: "amara.joseph@nailart.com",
     initials: "AJ",
@@ -44,7 +42,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3316",
+    id: "VF-3304",
     name: "Lily Thompson",
     email: "lily.thompson@lashbeauty.com",
     initials: "LT",
@@ -58,7 +56,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3317",
+    id: "VF-3305",
     name: "Hannah Davis",
     email: "hannah.davis@beautypro.com",
     initials: "HD",
@@ -72,7 +70,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3318",
+    id: "VF-3306",
     name: "Emily Wilson",
     email: "emily.wilson@haircare.com",
     initials: "EW",
@@ -86,7 +84,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3319",
+    id: "VF-3307",
     name: "Zoe Anderson",
     email: "zoe.anderson@nailstudio.com",
     initials: "ZA",
@@ -100,7 +98,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3320",
+    id: "VF-3308",
     name: "Ruby Evans",
     email: "ruby.evans@lashworld.com",
     initials: "RE",
@@ -114,7 +112,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3321",
+    id: "VF-3309",
     name: "Charlotte Smith",
     email: "charlotte.smith@beautylab.com",
     initials: "CS",
@@ -128,7 +126,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3322",
+    id: "VF-3310",
     name: "Grace Taylor",
     email: "grace.taylor@hairpro.com",
     initials: "GT",
@@ -142,7 +140,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3323",
+    id: "VF-3311",
     name: "Maya Patel",
     email: "maya.patel@nailsbeauty.com",
     initials: "MP",
@@ -156,7 +154,7 @@ export const VERIFICATION_REQUESTS = [
   },
 
   {
-    id: "VF-3324",
+    id: "VF-3312",
     name: "Ava Johnson",
     email: "ava.johnson@lashart.com",
     initials: "AJ",
