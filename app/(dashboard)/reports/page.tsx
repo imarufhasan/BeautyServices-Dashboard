@@ -1,11 +1,15 @@
-import React, { Component } from 'react'
+export default function TestPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-gray-800">
+          Test Dashboard Page
+        </h1>
 
-export default class page extends Component {
-  render() {
-    return (
-      <div>
-        
+        <p className="mt-2 text-gray-500">
+          This is a blank testing page.
+        </p>
       </div>
-    )
-  }
+    </div>
+  );
 }

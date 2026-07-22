@@ -88,7 +88,7 @@ export default function AdminProfilePage() {
   };
 
   return (
-    <div className="flex-1 bg-muted/40 min-h-screen">
+    <div className="flex-1 bg-muted/40 min-h-screen w-full">
       {successMessage && (
         <div className="fixed top-5 right-5 z-[100]">
           <div className="flex items-center gap-2 bg-white border border-green-200 shadow-lg rounded-xl px-4 py-3">
@@ -102,7 +102,8 @@ export default function AdminProfilePage() {
       )}
 
       {/* Top bar */}
-      <div className="flex items-center justify-between bg-white border-b border-hairline px-8 py-4">
+      <div className="w-full flex items-center justify-between bg-white border-b border-hairline px-8 py-4">
+        {" "}
         <div>
           <h1 className="text-xl font-extrabold text-ink">Admin Profile</h1>
           <p className="text-xs text-subtle mt-0.5">
@@ -110,7 +111,6 @@ export default function AdminProfilePage() {
             <span className="text-brand-pinkDeep font-semibold">Profile</span>
           </p>
         </div>
-
         {/* <div className="flex items-center gap-5">
           <button className="relative w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors">
             <Bell size={18} className="text-ink/70" />
@@ -230,7 +230,7 @@ export default function AdminProfilePage() {
         </div>
       </div>
 
-      <div className="p-8 space-y-6 max-w-6xl">
+      <div className="w-full p-8 space-y-6">
         {/* Profile summary card */}
         <div className="bg-white rounded-2xl border border-hairline p-6 flex items-center justify-between shadow-soft">
           <div className="flex items-center gap-5">
@@ -298,7 +298,6 @@ export default function AdminProfilePage() {
             Edit Profile
           </button>
         </div>
-
         {/* Bottom grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Update Password */}

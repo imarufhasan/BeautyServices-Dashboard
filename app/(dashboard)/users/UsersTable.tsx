@@ -82,9 +82,7 @@ export default function UsersPage() {
 
   return (
     <>
-      <Topbar section="memillennial" page="User Management" />
-
-      <main className="p-6 space-y-5">
+      <main className="px-6 space-y-5">
         <div>
           <h1 className="text-2xl font-extrabold text-ink">User Management</h1>
           <p className="text-sm text-subtle mt-0.5">
