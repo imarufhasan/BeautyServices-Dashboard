@@ -20,6 +20,7 @@ import {
 } from "./data";
 import { AdminTopbar } from "@/components/dashboard/admin-topbar";
 import { StatCard } from "@/components/dashboard/stat-card2";
+import { Topbar } from "@/components/layout/topbar";
 
 function formatCurrency(amount: number, currency: string) {
   return `${currency} $${amount.toLocaleString("en-AU")}`;
@@ -62,10 +63,8 @@ export default function RefundsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
-      <AdminTopbar
-        title="Cancellation & Refund"
-        subtitle="memillennial Admin · Handle refunds and cancellations"
-      />
+ 
+      <Topbar section="memillennial" page="Cancellation & Refund" />
 
       <main className="flex-1 px-8 py-7 space-y-6">
         <div>
@@ -123,7 +122,9 @@ export default function RefundsPage() {
 
         <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-4 flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold text-subtle">Refund Status:</span>
+            <span className="text-xs font-bold text-subtle">
+              Refund Status:
+            </span>
             {REFUND_STATUS_FILTERS.map((status) => (
               <button
                 key={status}

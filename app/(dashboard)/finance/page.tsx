@@ -27,6 +27,7 @@ import {
 } from "./data";
 import { AdminTopbar } from "@/components/dashboard/admin-topbar";
 import { StatCard } from "@/components/dashboard/stat-card2";
+import { Topbar } from "@/components/layout/topbar";
 
 function formatCurrency(amount: number, currency: string) {
   return `${currency} $${amount.toLocaleString("en-IN")}`;
@@ -66,10 +67,12 @@ export default function FinancePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
-      <AdminTopbar
+      {/* <AdminTopbar
         title="Financial Management"
         subtitle="memillennial Admin · Revenue, commissions and withdrawals"
-      />
+      /> */}
+
+      <Topbar section="memillennial" page="Finance" />
 
       <main className="flex-1 px-8 py-7 space-y-6">
         <div className="flex items-start justify-between">
@@ -97,7 +100,10 @@ export default function FinancePage() {
             )}
             label="Total Revenue"
             sublabel="All time"
-            trend={{ direction: "up", value: overview.stats.totalRevenue.trend }}
+            trend={{
+              direction: "up",
+              value: overview.stats.totalRevenue.trend,
+            }}
           />
           <StatCard
             icon={BarChart3}
@@ -120,7 +126,10 @@ export default function FinancePage() {
               overview.stats.todayRevenue.currency,
             )}
             label="Today's Revenue"
-            trend={{ direction: "up", value: overview.stats.todayRevenue.trend }}
+            trend={{
+              direction: "up",
+              value: overview.stats.todayRevenue.trend,
+            }}
           />
         </div>
 
@@ -153,7 +162,11 @@ export default function FinancePage() {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ left: 8, right: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#eee"
+                />
                 <XAxis
                   dataKey="label"
                   tick={{ fontSize: 11, fill: "#9aa0a6" }}
@@ -167,7 +180,9 @@ export default function FinancePage() {
                   tickFormatter={(v) => `₹${v / 1000}k`}
                 />
                 <Tooltip
-                  formatter={(value: number) => `₹${value.toLocaleString()}`}
+                  formatter={(value) =>
+                    `$${Number(value ?? 0).toLocaleString()}`
+                  }
                 />
                 <Line
                   type="monotone"

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   Users,
   Sparkles,
@@ -6,18 +9,22 @@ import {
   DollarSign,
   Activity,
 } from "lucide-react";
+
 import { Topbar } from "@/components/layout/topbar";
 import { StatCard, TrendPoint } from "@/components/dashboard/stat-card";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { BookingChart } from "@/components/dashboard/booking-chart";
 import { RecentBookings } from "@/components/dashboard/recent-bookings";
 import { PendingVerifications } from "@/components/dashboard/pending-verifications";
+import Skeleton from "@/components/dashboard/Skeleton";
 
-// Dummy "API response" shape for each stat's trend sparkline — 8 daily
-// samples, as if returned by GET /api/dashboard/stats?range=8d
 function trend(values: number[]): TrendPoint[] {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon"];
-  return values.map((value, i) => ({ date: days[i % days.length], value }));
+
+  return values.map((value, i) => ({
+    date: days[i % days.length],
+    value,
+  }));
 }
 
 const STATS = [
@@ -89,7 +96,37 @@ const STATS = [
   },
 ];
 
+function DashboardSkeleton() {
+  return (
+    <>
+      {/* Welcome Card */}
+      <Skeleton className="h-28 w-full rounded-xl" />
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-36 w-full rounded-2xl" />
+        ))}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <Skeleton className="h-80 rounded-2xl lg:col-span-2" />
+        <Skeleton className="h-80 rounded-2xl" />
+      </div>
+
+      {/* Bottom cards */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <Skeleton className="h-72 rounded-2xl lg:col-span-2" />
+        <Skeleton className="h-72 rounded-2xl" />
+      </div>
+    </>
+  );
+}
+
 export default function DashboardPage() {
+  const [loading, setLoading] = useState(true);
+
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -97,35 +134,54 @@ export default function DashboardPage() {
     year: "numeric",
   });
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <Topbar section="memillennial" page="Dashboard" />
 
-      <main className="p-6 space-y-6">
-        <div className="rounded-xl p-6 bg-gradient-to-r from-[#FDE0E9] via-[#FDEDE3] to-[#EAF7EF]">
-          <p className="text-xl font-extrabold text-ink">
-            Welcome back, Alex O&apos;Brien 👋
-          </p>
-          <p className="text-xs text-subtle mt-1">
-            Platform overview for {today}
-          </p>
-        </div>
+      <main className="space-y-6 p-6">
+        {loading ? (
+          <DashboardSkeleton />
+        ) : (
+          <>
+            {/* Welcome */}
+            <div className="rounded-xl bg-linear-to-r from-[#FDE0E9] via-[#FDEDE3] to-[#EAF7EF] p-6">
+              <p className="text-xl font-extrabold text-ink">
+                Welcome back, Alex O&apos;Brien 👋
+              </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {STATS.map((s) => (
-            <StatCard key={s.label} {...s} />
-          ))}
-        </div>
+              <p className="mt-1 text-xs text-subtle">
+                Platform overview for {today}
+              </p>
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <RevenueChart />
-          <BookingChart />
-        </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {STATS.map((s) => (
+                <StatCard key={s.label} {...s} />
+              ))}
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <RecentBookings />
-          <PendingVerifications />
-        </div>
+            {/* Charts */}
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+              <RevenueChart />
+              <BookingChart />
+            </div>
+
+            {/* Bottom */}
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+              <RecentBookings />
+              <PendingVerifications />
+            </div>
+          </>
+        )}
       </main>
     </>
   );

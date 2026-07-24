@@ -15,9 +15,15 @@ import {
   CheckCircle2,
   Clock,
 } from "lucide-react";
-import { AUDIENCE_OPTIONS, AudienceOption, fakeDelay, NotificationChannel, RECENT_NOTIFICATIONS } from "@/lib/mockData";
+import {
+  AUDIENCE_OPTIONS,
+  AudienceOption,
+  fakeDelay,
+  NotificationChannel,
+  RECENT_NOTIFICATIONS,
+} from "@/lib/mockData";
 import Skeleton from "@/components/dashboard/Skeleton";
-
+import { Topbar } from "@/components/layout/topbar";
 
 const CHANNELS: { key: NotificationChannel; icon: React.ElementType }[] = [
   { key: "Push", icon: Smartphone },
@@ -33,7 +39,9 @@ export default function NotificationsPage() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [audience, setAudience] = useState<AudienceOption["key"]>("all");
-  const [sendState, setSendState] = useState<"idle" | "sending" | "sent">("idle");
+  const [sendState, setSendState] = useState<"idle" | "sending" | "sent">(
+    "idle",
+  );
   const [scheduleMode, setScheduleMode] = useState<"now" | "later">("now");
 
   // Simulate initial fetch of audience counts + recent notification history
@@ -61,13 +69,15 @@ export default function NotificationsPage() {
       {/* <Sidebar active="Notifications" /> */}
 
       <div className="flex-1">
-        {/* <Topbar crumb="Notifications" /> */}
+        <Topbar section="memillennial" page="Notifications" />
 
         <main className="grid grid-cols-1 gap-6 p-8 xl:grid-cols-[1fr_360px]">
           {/* Left column */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-[26px] font-semibold text-gray-900">Notifications</h1>
+              <h1 className="text-[26px] font-semibold text-gray-900">
+                Notifications
+              </h1>
               <p className="mt-1 text-[14px] text-gray-400">
                 Create and manage platform-wide notifications and campaigns.
               </p>
@@ -75,7 +85,9 @@ export default function NotificationsPage() {
 
             {/* Create notification card */}
             <section className="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm shadow-gray-100">
-              <h2 className="text-[17px] font-semibold text-gray-900">Create Notification</h2>
+              <h2 className="text-[17px] font-semibold text-gray-900">
+                Create Notification
+              </h2>
               <p className="mt-1 text-[13px] text-gray-400">
                 Compose and send a notification to your users.
               </p>
@@ -101,7 +113,7 @@ export default function NotificationsPage() {
                         onClick={() => setChannel(c.key)}
                         className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
                           isActive
-                            ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
+                            ? "bg-linear-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
                             : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                         }`}
                       >
@@ -155,9 +167,17 @@ export default function NotificationsPage() {
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-100 text-pink-500">
                     <Upload className="h-4 w-4" />
                   </span>
-                  <span className="text-[13px] font-medium text-gray-700">Upload Banner Image</span>
-                  <span className="text-[11px] text-gray-400">PNG, JPG up to 2MB</span>
-                  <input type="file" accept="image/png,image/jpeg" className="hidden" />
+                  <span className="text-[13px] font-medium text-gray-700">
+                    Upload Banner Image
+                  </span>
+                  <span className="text-[11px] text-gray-400">
+                    PNG, JPG up to 2MB
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    className="hidden"
+                  />
                 </label>
               )}
 
@@ -191,7 +211,9 @@ export default function NotificationsPage() {
                               isActive ? "border-pink-500" : "border-gray-300"
                             }`}
                           >
-                            {isActive && <span className="h-2 w-2 rounded-full bg-pink-500" />}
+                            {isActive && (
+                              <span className="h-2 w-2 rounded-full bg-pink-500" />
+                            )}
                           </span>
                           {a.label}
                         </span>
@@ -219,7 +241,7 @@ export default function NotificationsPage() {
                     onClick={() => setScheduleMode("now")}
                     className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors ${
                       scheduleMode === "now"
-                        ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
+                        ? "bg-linear-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
                         : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                     }`}
                   >
@@ -230,7 +252,7 @@ export default function NotificationsPage() {
                     onClick={() => setScheduleMode("later")}
                     className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-medium transition-colors ${
                       scheduleMode === "later"
-                        ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
+                        ? "bg-linear-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
                         : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                     }`}
                   >
@@ -259,7 +281,7 @@ export default function NotificationsPage() {
                 <button
                   disabled={loading || sendState !== "idle"}
                   onClick={handleSend}
-                  className="flex min-w-[168px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-orange-400 px-5 py-2 text-[13px] font-medium text-white shadow-sm shadow-pink-200 transition-opacity disabled:opacity-70"
+                  className="flex min-w-42 items-center justify-center gap-2 rounded-full bg-linear-to-r from-pink-500 to-orange-400 px-5 py-2 text-[13px] font-medium text-white shadow-sm shadow-pink-200 transition-opacity disabled:opacity-70"
                 >
                   {sendState === "sending" && (
                     <>
@@ -285,8 +307,12 @@ export default function NotificationsPage() {
 
             {/* Recent notifications */}
             <section className="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm shadow-gray-100">
-              <h2 className="text-[17px] font-semibold text-gray-900">Recent Notifications</h2>
-              <p className="mt-1 text-[13px] text-gray-400">Your last few campaigns.</p>
+              <h2 className="text-[17px] font-semibold text-gray-900">
+                Recent Notifications
+              </h2>
+              <p className="mt-1 text-[13px] text-gray-400">
+                Your last few campaigns.
+              </p>
 
               <div className="mt-5 space-y-3">
                 {loading
@@ -299,8 +325,12 @@ export default function NotificationsPage() {
                         className="flex items-center justify-between rounded-xl border border-gray-100 px-4 py-3"
                       >
                         <div>
-                          <p className="text-[13px] font-medium text-gray-900">{n.title}</p>
-                          <p className="mt-0.5 line-clamp-1 text-[12px] text-gray-400">{n.message}</p>
+                          <p className="text-[13px] font-medium text-gray-900">
+                            {n.title}
+                          </p>
+                          <p className="mt-0.5 line-clamp-1 text-[12px] text-gray-400">
+                            {n.message}
+                          </p>
                           <p className="mt-1 text-[11px] text-gray-300">
                             {n.channel} · {n.audience} · {n.sentAt}
                           </p>
@@ -310,8 +340,8 @@ export default function NotificationsPage() {
                             n.status === "Sent"
                               ? "bg-emerald-50 text-emerald-600"
                               : n.status === "Scheduled"
-                              ? "bg-amber-50 text-amber-600"
-                              : "bg-gray-100 text-gray-500"
+                                ? "bg-amber-50 text-amber-600"
+                                : "bg-gray-100 text-gray-500"
                           }`}
                         >
                           {n.status}
@@ -325,7 +355,9 @@ export default function NotificationsPage() {
           {/* Right column */}
           <div className="space-y-6">
             <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm shadow-gray-100">
-              <p className="mb-4 text-[11px] font-semibold tracking-wide text-gray-400">LIVE PREVIEW</p>
+              <p className="mb-4 text-[11px] font-semibold tracking-wide text-gray-400">
+                LIVE PREVIEW
+              </p>
 
               {loading ? (
                 <div className="space-y-3">
@@ -337,7 +369,7 @@ export default function NotificationsPage() {
                   {/* Push mock */}
                   <div className="rounded-2xl bg-gray-900 p-4 text-white">
                     <div className="flex items-center gap-2 text-[11px] text-gray-400">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-orange-400 text-[8px] font-bold">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-linear-to-br from-pink-500 to-orange-400 text-[8px] font-bold">
                         m
                       </span>
                       memillennial · now
@@ -354,21 +386,28 @@ export default function NotificationsPage() {
                   {/* Email mock */}
                   <div className="rounded-2xl border border-gray-100 p-4">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 text-[11px] font-bold text-white">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-linear-to-br from-pink-500 to-orange-400 text-[11px] font-bold text-white">
                         m
                       </span>
                       <div>
-                        <p className="text-[12px] font-medium text-gray-900">memillennial</p>
-                        <p className="text-[11px] text-gray-400">no-reply@memillennial.com</p>
+                        <p className="text-[12px] font-medium text-gray-900">
+                          memillennial
+                        </p>
+                        <p className="text-[11px] text-gray-400">
+                          no-reply@memillennial.com
+                        </p>
                       </div>
                     </div>
                     <p className="mt-2 text-[13px] font-semibold text-gray-900">
                       {title || "Summer Sale Extended!"}
                     </p>
                     <p className="text-[12px] text-gray-400">
-                      {message ? message.slice(0, 40) + (message.length > 40 ? "…" : "") : "Your message will appear here…"}
+                      {message
+                        ? message.slice(0, 40) +
+                          (message.length > 40 ? "…" : "")
+                        : "Your message will appear here…"}
                     </p>
-                    <button className="mt-3 w-full rounded-full bg-gradient-to-r from-pink-500 to-orange-400 py-2 text-[12px] font-medium text-white">
+                    <button className="mt-3 w-full rounded-full bg-linear-to-r from-pink-500 to-orange-400 py-2 text-[12px] font-medium text-white">
                       Book Now
                     </button>
                   </div>
@@ -388,9 +427,13 @@ export default function NotificationsPage() {
               ) : (
                 <>
                   <p className="text-[26px] font-semibold text-gray-900">
-                    {selectedAudience.count !== null ? selectedAudience.count.toLocaleString() : "—"}
+                    {selectedAudience.count !== null
+                      ? selectedAudience.count.toLocaleString()
+                      : "—"}
                   </p>
-                  <p className="text-[13px] text-gray-400">{selectedAudience.label}</p>
+                  <p className="text-[13px] text-gray-400">
+                    {selectedAudience.label}
+                  </p>
                   <div className="mt-3 flex items-center gap-1.5 text-[12px] text-gray-400">
                     <Smartphone className="h-3.5 w-3.5" />
                     via {channel}

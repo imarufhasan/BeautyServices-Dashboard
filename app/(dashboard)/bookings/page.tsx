@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   CalendarDays,
-  Image as ImageIcon,
-  Bell,
   ChevronRight,
   Search,
   SlidersHorizontal,
@@ -23,10 +22,29 @@ import {
   CheckCheck,
   ChevronLeft,
 } from "lucide-react";
-import { INITIAL_BOOKINGS } from "./bookingData";
+import {
+  Booking,
+  BookingStatus,
+  INITIAL_BOOKINGS,
+} from "../../../lib/bookingData";
 import { Topbar } from "@/components/layout/topbar";
+import Skeleton from "@/components/dashboard/Skeleton";
+import Link from "next/link";
 
-const STATUS_TABS = [
+export type PaymentStatus = "Paid" | "Pending" | "Refunded" | "Partial Refund";
+
+export type VisitType = "Home" | "Studio";
+
+type StatusCounts = { total: number } & Record<BookingStatus, number>;
+
+const BOOKINGS: Booking[] = INITIAL_BOOKINGS as Booking[];
+
+interface Toast {
+  id: number;
+  message: string;
+}
+
+const STATUS_TABS: ("All" | BookingStatus)[] = [
   "All",
   "Pending",
   "Confirmed",
@@ -36,7 +54,7 @@ const STATUS_TABS = [
   "Disputed",
 ];
 
-const STATUS_STYLES = {
+const STATUS_STYLES: Record<BookingStatus, string> = {
   Completed: "bg-emerald-50 text-emerald-600",
   Pending: "bg-amber-50 text-amber-600",
   Confirmed: "bg-sky-50 text-sky-600",
@@ -45,14 +63,14 @@ const STATUS_STYLES = {
   Disputed: "bg-rose-50 text-rose-600",
 };
 
-const PAYMENT_STYLES = {
+const PAYMENT_STYLES: Record<PaymentStatus, string> = {
   Paid: "text-emerald-600",
   Pending: "text-amber-600",
   Refunded: "text-slate-500",
   "Partial Refund": "text-rose-500",
 };
 
-function currency(n) {
+function currency(n: number) {
   return `AUD ${n.toLocaleString("en-AU")}`;
 }
 
@@ -63,13 +81,25 @@ function timeAgoNote() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Small building blocks
-// ---------------------------------------------------------------------------
+interface StatCardProps {
+  icon: LucideIcon;
+  iconBg: string;
+  iconColor: string;
+  trend?: string;
+  value: string | number;
+  label: string;
+}
 
-function StatCard({ icon: Icon, iconBg, iconColor, trend, value, label }) {
+function StatCard({
+  icon: Icon,
+  iconBg,
+  iconColor,
+  trend,
+  value,
+  label,
+}: StatCardProps) {
   return (
-    <div className="flex-1 min-w-[150px] rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="flex-1 min-w-37.5 rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
       <div className="flex items-center justify-between">
         <div
           className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconBg}`}
@@ -96,7 +126,7 @@ function StatCard({ icon: Icon, iconBg, iconColor, trend, value, label }) {
   );
 }
 
-function StatusPill({ status }) {
+function StatusPill({ status }: { status: BookingStatus }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[status]}`}
@@ -107,7 +137,7 @@ function StatusPill({ status }) {
   );
 }
 
-function Toast({ toasts }) {
+function ToastStack({ toasts }: { toasts: Toast[] }) {
   return (
     <div className="pointer-events-none fixed bottom-5 right-5 z-50 flex flex-col gap-2">
       {toasts.map((t) => (
@@ -123,45 +153,64 @@ function Toast({ toasts }) {
   );
 }
 
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-slate-400">{label}</span>
+      <span className="font-medium text-slate-700">{value}</span>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 export default function BookingManagement() {
-  const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
-  const [activeTab, setActiveTab] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
+  const [activeTab, setActiveTab] = useState<"All" | BookingStatus>("All");
   const [query, setQuery] = useState("");
-  const [openMenuId, setOpenMenuId] = useState(null);
-  const [detailBooking, setDetailBooking] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [detailBooking, setDetailBooking] = useState<Booking | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [exporting, setExporting] = useState(false);
-  const [toasts, setToasts] = useState([]);
-  const menuRef = useRef(null);
-  const filterRef = useRef(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
+  // Pure, render-safe id source — avoids the react-hooks/purity warning that
+  // Math.random()/Date.now() trigger when called from component-scoped code.
+  const toastIdRef = useRef(0);
 
   useEffect(() => {
-    function onClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target))
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
         setOpenMenuId(null);
-      if (filterRef.current && !filterRef.current.contains(e.target))
+      if (filterRef.current && !filterRef.current.contains(e.target as Node))
         setFilterOpen(false);
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  function pushToast(message) {
-    const id = Math.random().toString(36).slice(2);
+  function pushToast(message: string) {
+    const id = toastIdRef.current++;
     setToasts((t) => [...t, { id, message }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2600);
   }
 
   const categories = useMemo(
-    () => [
-      "All",
-      ...Array.from(new Set(INITIAL_BOOKINGS.map((b) => b.category))),
-    ],
+    () => ["All", ...Array.from(new Set(BOOKINGS.map((b) => b.category)))],
     [],
   );
 
@@ -181,15 +230,16 @@ export default function BookingManagement() {
     });
   }, [bookings, activeTab, categoryFilter, query]);
 
-  const counts = useMemo(() => {
-    const c = { total: bookings.length };
-    STATUS_TABS.slice(1).forEach((s) => {
-      c[s] = bookings.filter((b) => b.status === s).length;
+  const counts = useMemo<StatusCounts>(() => {
+    const c = { total: bookings.length } as StatusCounts;
+    STATUS_TABS.slice(1).forEach((tab) => {
+      const status = tab as BookingStatus;
+      c[status] = bookings.filter((b) => b.status === status).length;
     });
     return c;
   }, [bookings]);
 
-  function updateStatus(id, status) {
+  function updateStatus(id: string, status: BookingStatus) {
     setBookings((prev) =>
       prev.map((b) => (b.id === id ? { ...b, status } : b)),
     );
@@ -206,6 +256,14 @@ export default function BookingManagement() {
     }, 1200);
   }
 
+  if (loading) {
+    return (
+      <div className="p-6 bg-[#f7f7f9] min-h-screen">
+        <BookingManagementSkeleton />
+      </div>
+    );
+  }
+
   return (
     <>
       <Topbar section="memillennial" page="Bookings" />
@@ -213,8 +271,6 @@ export default function BookingManagement() {
       <div className="flex h-screen w-full bg-[#f7f7f9] font-sans text-slate-700 antialiased">
         {/* ---------------- Main ---------------- */}
         <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-    
-
           <main className="flex-1 px-8 py-6">
             {/* Title row */}
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
@@ -280,7 +336,7 @@ export default function BookingManagement() {
                   type="button"
                   onClick={handleExport}
                   disabled={exporting}
-                  className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-pink-400 to-orange-300 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-70"
+                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-pink-400 to-orange-300 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-70"
                 >
                   <Download size={14} />
                   {exporting ? "Exporting…" : "Export"}
@@ -349,7 +405,7 @@ export default function BookingManagement() {
                   onClick={() => setActiveTab(tab)}
                   className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
                     activeTab === tab
-                      ? "bg-gradient-to-r from-pink-400 to-orange-300 text-white shadow-sm"
+                      ? "bg-linear-to-r from-pink-400 to-orange-300 text-white shadow-sm"
                       : "text-slate-500 hover:bg-slate-50"
                   }`}
                 >
@@ -361,7 +417,7 @@ export default function BookingManagement() {
             {/* Table */}
             <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[1000px] text-left text-[13px]">
+                <table className="w-full min-w-250 text-left text-[13px]">
                   <thead>
                     <tr className="border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-400">
                       <th className="px-5 py-3 font-semibold">Booking ID</th>
@@ -466,7 +522,7 @@ export default function BookingManagement() {
                               ref={menuRef}
                               className="absolute right-5 top-11 z-20 w-44 overflow-hidden rounded-xl border border-slate-100 bg-white py-1 text-left shadow-lg"
                             >
-                              <button
+                              {/* <button
                                 onClick={() => {
                                   setDetailBooking(b);
                                   setOpenMenuId(null);
@@ -474,7 +530,15 @@ export default function BookingManagement() {
                                 className="flex w-full items-center gap-2 px-3.5 py-2 text-[13px] text-slate-600 hover:bg-slate-50"
                               >
                                 <Eye size={14} /> View Details
-                              </button>
+                              </button> */}
+                              <Link
+                                href={`/bookings/${b.id}`}
+                                onClick={() => setOpenMenuId(null)}
+                                className="flex w-full items-center gap-2 px-3.5 py-2 text-[13px] text-slate-600 hover:bg-slate-50"
+                              >
+                                <Eye size={14} />
+                                View Details
+                              </Link>
                               <button
                                 onClick={() => updateStatus(b.id, "Completed")}
                                 className="flex w-full items-center gap-2 px-3.5 py-2 text-[13px] text-slate-600 hover:bg-slate-50"
@@ -533,7 +597,7 @@ export default function BookingManagement() {
             onClick={() => setDetailBooking(null)}
           >
             <div
-              className="w-[420px] rounded-2xl bg-white p-6 shadow-xl"
+              className="w-105 rounded-2xl bg-white p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-4 flex items-center justify-between">
@@ -574,17 +638,130 @@ export default function BookingManagement() {
           </div>
         )}
 
-        <Toast toasts={toasts} />
+        <ToastStack toasts={toasts} />
       </div>
     </>
   );
 }
 
-function Row({ label, value }) {
+function BookingManagementSkeleton() {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-slate-400">{label}</span>
-      <span className="font-medium text-slate-700">{value}</span>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-64 rounded-md" />
+          <Skeleton className="h-4 w-80 rounded-md" />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-56 rounded-xl" />
+          <Skeleton className="h-10 w-40 rounded-xl" />
+          <Skeleton className="h-10 w-28 rounded-xl" />
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 xl:grid-cols-6 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-slate-100 bg-white px-5 py-4"
+          >
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-9 w-9 rounded-xl" />
+              <Skeleton className="h-4 w-12 rounded-md" />
+            </div>
+
+            <Skeleton className="mt-4 h-8 w-20 rounded-md" />
+            <Skeleton className="mt-2 h-4 w-32 rounded-md" />
+          </div>
+        ))}
+      </div>
+
+      {/* Status Tabs */}
+      <div className="rounded-2xl border border-slate-100 bg-white px-4 py-3 flex gap-2">
+        <Skeleton className="h-8 w-16 rounded-full" />
+
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-8 w-24 rounded-full" />
+        ))}
+      </div>
+
+      {/* Table */}
+      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
+        {/* Table Header */}
+        <div className="flex items-center gap-5 px-5 py-4 border-b border-slate-100">
+          {Array.from({ length: 11 }).map((_, i) => (
+            <Skeleton key={i} className="h-4 flex-1 rounded-md" />
+          ))}
+        </div>
+
+        {/* Table Rows */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-5 px-5 py-4 border-b border-slate-50"
+          >
+            {/* Booking ID */}
+            <Skeleton className="h-5 w-20" />
+
+            {/* Customer */}
+            <div className="flex items-center gap-3 flex-1">
+              <Skeleton className="h-9 w-9 rounded-full" />
+
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-3 w-36" />
+              </div>
+            </div>
+
+            {/* Artist */}
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+
+            {/* Service */}
+            <Skeleton className="h-4 w-24 flex-1" />
+
+            {/* Category */}
+            <Skeleton className="h-4 w-20 flex-1" />
+
+            {/* Date */}
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+
+            {/* Visit */}
+            <Skeleton className="h-4 w-16 flex-1" />
+
+            {/* Payment */}
+            <Skeleton className="h-4 w-16 flex-1" />
+
+            {/* Status */}
+            <Skeleton className="h-7 w-24 rounded-full" />
+
+            {/* Amount */}
+            <Skeleton className="h-5 w-20" />
+
+            {/* Action */}
+            <Skeleton className="h-7 w-7 rounded-md" />
+          </div>
+        ))}
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center px-5 py-3">
+          <Skeleton className="h-4 w-48" />
+
+          <div className="flex gap-2">
+            <Skeleton className="h-7 w-7 rounded-lg" />
+            <Skeleton className="h-7 w-10 rounded-lg" />
+            <Skeleton className="h-7 w-7 rounded-lg" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

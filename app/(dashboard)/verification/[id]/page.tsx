@@ -15,31 +15,27 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { VERIFICATION_DETAILS } from "./verificationDetails.data";
+import Skeleton from "@/components/dashboard/Skeleton";
 
-// Mock data - Replace with API fetch later
-// NOTE: Image paths point to /public/assets/verification/ -> pic1.jpg, pic2.jpg, pic3.jpg...
-// The `public` folder is the web root in Next.js, so an actual file on disk at
-// public/assets/verification/pic1.jpg is served at the URL /assets/verification/pic1.jpg
-// Drop your actual images there with these exact filenames (or update the paths below).
-
-interface VerificationDocument {
+export interface VerificationDocument {
   id: number;
   title: string;
   image: string;
 }
 
-interface Certificate {
+export interface Certificate {
   id: number;
   title: string;
   issuedDate: string;
 }
 
-interface VerificationChecklistItem {
+export interface VerificationChecklistItem {
   label: string;
   completed: boolean;
 }
 
-interface VerificationDetail {
+export interface VerificationDetail {
   id: string;
   name: string;
   email: string;
@@ -65,596 +61,29 @@ interface VerificationDetail {
   verificationChecklist: VerificationChecklistItem[];
 }
 
-const VERIFICATION_DETAILS: Record<string, VerificationDetail> = {
-  "VF-3301": {
-    id: "VF-3301",
-    name: "Priya Sharma",
-    email: "priya.sharma@beauty.com",
-    phone: "+61 445 678 901",
-    initials: "PS",
-    avatar: "/assets/verification/pic1.jpg",
-    businessName: "Priya Beauty Studio",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 556",
-    category: "Makeup Artist",
-    experience: "7 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 556",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jun 28, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3302": {
-    id: "VF-3302",
-    name: "Isabella Romano",
-    email: "isabella.r@hairpro.com.au",
-    phone: "+61 467 890 123",
-    initials: "IR",
-    avatar: "/assets/verification/pic2.jpg",
-    businessName: "Romano Hair & Style",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 556",
-    category: "Hair Stylist",
-    experience: "5 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 556",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jun 29, 2026",
-    verificationStatus: "Under Review",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3303": {
-    id: "VF-3303",
-    name: "Mei Lin Chen",
-    email: "meilin.chen@nailsbymei.com",
-    phone: "+61 489 012 345",
-    initials: "ML",
-    avatar: "/assets/verification/pic3.jpg",
-    businessName: "Mei's Nail Atelier",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 556",
-    category: "Nail Technician",
-    experience: "6 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 556",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jun 30, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: true },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3304": {
-    id: "VF-3304",
-    name: "Aisha Okonkwo",
-    email: "aisha.ok@lashart.com.au",
-    phone: "+61 412 903 456",
-    initials: "AO",
-    avatar: "/assets/verification/pic1.jpg",
-    businessName: "Aisha Lash & Brow",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 556",
-    category: "Lash Artist",
-    experience: "4 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 556",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 1, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: true },
-      { label: "Insurance Verified", completed: true },
-    ],
-  },
-  "VF-3305": {
-    id: "VF-3305",
-    name: "Hannah Davis",
-    email: "hannah.davis@beautypro.com",
-    phone: "+61 412 903 457",
-    initials: "HD",
-    avatar: "/assets/verification/pic2.jpg",
-    businessName: "Hannah Beauty Pro",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 558",
-    category: "Makeup Artist",
-    experience: "6 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 558",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 14, 2026",
-    verificationStatus: "Rejected",
-    statusColor: "text-destructive",
-    statusBg: "bg-[#FBE2E2]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: false },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3306": {
-    id: "VF-3306",
-    name: "Emily Wilson",
-    email: "emily.wilson@haircare.com",
-    phone: "+61 412 903 458",
-    initials: "EW",
-    avatar: "/assets/verification/pic3.jpg",
-    businessName: "Emily Hair Boutique",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 559",
-    category: "Hair Stylist",
-    experience: "8 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 559",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 15, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3307": {
-    id: "VF-3307",
-    name: "Zoe Anderson",
-    email: "zoe.anderson@nailstudio.com",
-    phone: "+61 412 903 459",
-    initials: "ZA",
-    avatar: "/assets/verification/pic1.jpg",
-    businessName: "Zoe Nail Atelier",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 560",
-    category: "Nail Technician",
-    experience: "5 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 560",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 16, 2026",
-    verificationStatus: "Approved",
-    statusColor: "text-success",
-    statusBg: "bg-[#DDF3E7]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: true },
-      { label: "Insurance Verified", completed: true },
-    ],
-  },
-
-  "VF-3308": {
-    id: "VF-3308",
-    name: "Ruby Evans",
-    email: "ruby.evans@lashworld.com",
-    phone: "+61 412 903 460",
-    initials: "RE",
-    avatar: "/assets/verification/pic2.jpg",
-    businessName: "Ruby Lash World",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 561",
-    category: "Lash Artist",
-    experience: "4 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 561",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 17, 2026",
-    verificationStatus: "Under Review",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-  "VF-3309": {
-    id: "VF-3309",
-    name: "Charlotte Smith",
-    email: "charlotte.smith@beautylab.com",
-    phone: "+61 412 903 461",
-    initials: "CS",
-    avatar: "/assets/verification/pic3.jpg",
-    businessName: "Charlotte Beauty Lab",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 562",
-    category: "Makeup Artist",
-    experience: "9 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 562",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 18, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3310": {
-    id: "VF-3310",
-    name: "Grace Taylor",
-    email: "grace.taylor@hairpro.com",
-    phone: "+61 412 903 462",
-    initials: "GT",
-    avatar: "/assets/verification/pic1.jpg",
-    businessName: "Grace Hair Pro",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 563",
-    category: "Hair Stylist",
-    experience: "7 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 563",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 19, 2026",
-    verificationStatus: "Approved",
-    statusColor: "text-success",
-    statusBg: "bg-[#DDF3E7]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: true },
-      { label: "Insurance Verified", completed: true },
-    ],
-  },
-
-  "VF-3311": {
-    id: "VF-3311",
-    name: "Maya Patel",
-    email: "maya.patel@nailsbeauty.com",
-    phone: "+61 412 903 463",
-    initials: "MP",
-    avatar: "/assets/verification/pic2.jpg",
-    businessName: "Maya Nail Studio",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 564",
-    category: "Nail Technician",
-    experience: "6 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 564",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 20, 2026",
-    verificationStatus: "Pending",
-    statusColor: "text-warning",
-    statusBg: "bg-[#FBF0D6]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: true },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-
-  "VF-3312": {
-    id: "VF-3312",
-    name: "Ava Johnson",
-    email: "ava.johnson@lashart.com",
-    phone: "+61 412 903 464",
-    initials: "AJ",
-    avatar: "/assets/verification/pic3.jpg",
-    businessName: "Ava Lash Art",
-    businessAddress: "42 Collins St, Melbourne VIC 3000",
-    abn: "51 824 753 565",
-    category: "Lash Artist",
-    experience: "5 years",
-    businessRegistration: "Registered",
-    registrationStatus: "Active",
-    abuStatus: "Active - 51 824 753 565",
-    insuranceType: "Public Liability - $10M",
-    insuranceStatus: "Active",
-    submittedAt: "Jul 21, 2026",
-    verificationStatus: "Rejected",
-    statusColor: "text-destructive",
-    statusBg: "bg-[#FBE2E2]",
-    documents: [
-      {
-        id: 1,
-        title: "Driver Licence Front",
-        image: "/assets/verification/pic2.jpg",
-      },
-      {
-        id: 2,
-        title: "Driver Licence Back",
-        image: "/assets/verification/pic3.jpg",
-      },
-      {
-        id: 3,
-        title: "Selfie Verification",
-        image: "/assets/verification/pic1.jpg",
-      },
-    ],
-    certificates: [],
-    verificationChecklist: [
-      { label: "ID Verification", completed: true },
-      { label: "Selfie Match", completed: true },
-      { label: "ABN Check", completed: false },
-      { label: "Certificates Review", completed: false },
-      { label: "Insurance Verified", completed: false },
-    ],
-  },
-};
-
 export default function VerificationDetailPage() {
   const params = useParams();
   const id = params.id as string;
 
-  // const [data, setData] = useState<VerificationDetail | null>(null);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Fetch data based on ID
-  //   const verificationData = VERIFICATION_DETAILS[id];
-  //   setData(verificationData);
-  //   setLoading(false);
-  // }, [id]);
   const data = VERIFICATION_DETAILS[id];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-appbg min-h-screen">
+        <VerificationDetailSkeleton />
+      </div>
+    );
+  }
 
   if (!data) {
     return (
@@ -665,6 +94,7 @@ export default function VerificationDetailPage() {
         >
           ← Back to Verifications
         </Link>
+
         <p className="mt-4 text-red-500">Verification request not found</p>
       </div>
     );
@@ -697,7 +127,7 @@ export default function VerificationDetailPage() {
                     alt={data.name}
                     className="object-cover"
                   />
-                  <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 text-white text-2xl font-bold">
+                  <AvatarFallback className="rounded-lg bg-linear-to-br from-blue-400 to-blue-600 text-white text-2xl font-bold">
                     {data.initials}
                   </AvatarFallback>
                 </Avatar>
@@ -803,7 +233,7 @@ export default function VerificationDetailPage() {
                   key={cert.id}
                   className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-hairline"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center text-white flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center text-white shrink-0">
                     📄
                   </div>
                   <div className="flex-1 min-w-0">
@@ -812,7 +242,7 @@ export default function VerificationDetailPage() {
                     </p>
                     <p className="text-xs text-subtle">{cert.issuedDate}</p>
                   </div>
-                  <button className="text-brand-pinkDeep hover:text-brand-pink-deep flex-shrink-0">
+                  <button className="text-brand-pinkDeep hover:text-brand-pink-deep shrink-0">
                     <Download size={16} />
                   </button>
                 </div>
@@ -905,12 +335,12 @@ export default function VerificationDetailPage() {
                     {check.completed ? (
                       <CheckCircle
                         size={16}
-                        className="text-success flex-shrink-0"
+                        className="text-success shrink-0"
                       />
                     ) : (
                       <AlertCircle
                         size={16}
-                        className="text-subtle flex-shrink-0"
+                        className="text-subtle shrink-0"
                       />
                     )}
                     <p
@@ -944,6 +374,37 @@ export default function VerificationDetailPage() {
               </Button>
             </div>
           </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VerificationDetailSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Back */}
+      <Skeleton className="h-5 w-40 rounded-md" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left */}
+
+        <div className="lg:col-span-2 space-y-6">
+          <Skeleton className="h-72 rounded-2xl" />
+
+          <Skeleton className="h-64 rounded-2xl" />
+
+          <Skeleton className="h-48 rounded-2xl" />
+
+          <Skeleton className="h-52 rounded-2xl" />
+        </div>
+
+        {/* Right */}
+
+        <div className="space-y-6">
+          <Skeleton className="h-80 rounded-2xl" />
+
+          <Skeleton className="h-64 rounded-2xl" />
         </div>
       </div>
     </div>

@@ -12,9 +12,15 @@ import {
   Loader2,
   Image as ImageIcon,
 } from "lucide-react";
-import { fakeDelay, Review, REVIEW_STATS, REVIEWS, ReviewStatus } from "@/lib/mockData";
+import {
+  fakeDelay,
+  Review,
+  REVIEW_STATS,
+  REVIEWS,
+  ReviewStatus,
+} from "@/lib/mockData";
 import Skeleton from "@/components/dashboard/Skeleton";
-
+import { Topbar } from "@/components/layout/topbar";
 
 const TABS = [
   "All Reviews",
@@ -134,10 +140,9 @@ export default function ReviewModerationPage() {
 
   return (
     <div className="flex min-h-screen bg-[#FAFAFA]">
-      {/* <Sidebar active="Reviews" /> */}
 
       <div className="flex-1">
-        {/* <Topbar crumb="Review Moderation" /> */}
+        <Topbar section="memillennial" page="Reviews" />
 
         <main className="grid grid-cols-1 gap-6 p-8 xl:grid-cols-[1fr_340px]">
           <div className="space-y-6">
@@ -212,7 +217,7 @@ export default function ReviewModerationPage() {
                       disabled={loading}
                       className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors disabled:opacity-40 ${
                         activeTab === tab
-                          ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
+                          ? "bg-linear-to-r from-pink-500 to-orange-400 text-white shadow-sm shadow-pink-200"
                           : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                       }`}
                     >
@@ -266,7 +271,7 @@ export default function ReviewModerationPage() {
                             </td>
                             <td className="py-3.5 pr-4">
                               <div className="flex items-center gap-2">
-                                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-orange-300 text-[10px] font-semibold text-white">
+                                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-pink-400 to-orange-300 text-[10px] font-semibold text-white">
                                   {r.customerInitials}
                                 </span>
                                 <span className="font-medium text-gray-900">
@@ -280,7 +285,7 @@ export default function ReviewModerationPage() {
                             <td className="py-3.5 pr-4">
                               <Stars rating={r.rating} />
                             </td>
-                            <td className="py-3.5 pr-4 max-w-[160px] truncate text-gray-500">
+                            <td className="py-3.5 pr-4 max-w-40 truncate text-gray-500">
                               {r.snippet}
                             </td>
                             <td className="py-3.5 pr-4">
@@ -319,7 +324,7 @@ export default function ReviewModerationPage() {
                         key={n}
                         className={`h-7 w-7 rounded-full text-[12px] font-medium ${
                           n === 1
-                            ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white"
+                            ? "bg-linear-to-r from-pink-500 to-orange-400 text-white"
                             : "text-gray-400 hover:bg-gray-50"
                         }`}
                       >
@@ -357,7 +362,7 @@ export default function ReviewModerationPage() {
               ) : (
                 <>
                   <div className="mt-4 flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-orange-300 text-[11px] font-semibold text-white">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-pink-400 to-orange-300 text-[11px] font-semibold text-white">
                       {selected.customerInitials}
                     </span>
                     <div>

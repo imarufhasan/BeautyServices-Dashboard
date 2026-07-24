@@ -2,7 +2,6 @@
 
 import { useState, ChangeEvent, useEffect } from "react";
 import {
-  Bell,
   ChevronDown,
   Pencil,
   Building2,
@@ -17,6 +16,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function AdminProfilePage() {
   const [showCurrent, setShowCurrent] = useState(false);
@@ -25,21 +25,21 @@ export default function AdminProfilePage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  // const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [adminData, setAdminData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    department: "",
-  });
+  // const [adminData, setAdminData] = useState({
+  //   name: "",
+  //   email: "",
+  //   phone: "",
+  //   department: "",
+  // });
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  // const [passwordData, setPasswordData] = useState({
+  //   currentPassword: "",
+  //   newPassword: "",
+  //   confirmPassword: "",
+  // });
 
   useEffect(() => {
     return () => {
@@ -62,25 +62,25 @@ export default function AdminProfilePage() {
       }, 3000);
     }, 2000);
   };
-  const handleAdminChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setAdminData({
-      ...adminData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // const handleAdminChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setAdminData({
+  //     ...adminData,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
 
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPasswordData({
-      ...passwordData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setPasswordData({
+  //     ...passwordData,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      setProfileImage(file);
+      //setProfileImage(file);
 
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
@@ -90,7 +90,7 @@ export default function AdminProfilePage() {
   return (
     <div className="flex-1 bg-muted/40 min-h-screen w-full">
       {successMessage && (
-        <div className="fixed top-5 right-5 z-[100]">
+        <div className="fixed top-5 right-5 z-100">
           <div className="flex items-center gap-2 bg-white border border-green-200 shadow-lg rounded-xl px-4 py-3">
             <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
               <Check size={14} className="text-green-600" />
@@ -235,9 +235,11 @@ export default function AdminProfilePage() {
         <div className="bg-white rounded-2xl border border-hairline p-6 flex items-center justify-between shadow-soft">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <img
+              <Image
                 src={imagePreview || "/assets/verification/pic1.jpg"}
                 alt="Sophia Carter"
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-2xl object-cover"
               />
               <span className="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" />
@@ -366,7 +368,7 @@ export default function AdminProfilePage() {
             <div className="flex items-center gap-4 pb-5 mb-5 border-b border-hairline">
               <label className="relative w-16 h-16 rounded-xl border-2 border-dashed border-brand-pink/50 overflow-hidden flex items-center justify-center text-brand-pinkDeep shrink-0 cursor-pointer">
                 {imagePreview ? (
-                  <img
+                  <Image
                     src={imagePreview}
                     className="w-full h-full object-cover"
                     alt="preview"

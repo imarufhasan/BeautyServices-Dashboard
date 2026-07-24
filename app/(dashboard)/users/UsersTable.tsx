@@ -1,12 +1,12 @@
 "use client";
 import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Topbar } from "@/components/layout/topbar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { USERS } from "./users.data";
+import Skeleton from "@/components/dashboard/Skeleton";
 
 const MINI_STATS = [
   { value: "10", label: "Total Users", color: "text-brand-pinkDeep" },
@@ -49,16 +49,16 @@ export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-
+  const [loading, setLoading] = useState(true);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const ITEMS_PER_PAGE = 10;
 
-  const filteredUsers2 = USERS.filter((user) =>
-    `${user.name} ${user.email} ${user.phone} ${user.role} ${user.status}`
-      .toLowerCase()
-      .includes(search.toLowerCase()),
-  );
+  // const filteredUsers2 = USERS.filter((user) =>
+  //   `${user.name} ${user.email} ${user.phone} ${user.role} ${user.status}`
+  //     .toLowerCase()
+  //     .includes(search.toLowerCase()),
+  // );
   const filteredUsers = USERS.filter((user) => {
     const matchesSearch =
       `${user.name} ${user.email} ${user.phone} ${user.role} ${user.status}`
@@ -80,185 +80,208 @@ export default function UsersPage() {
     page * ITEMS_PER_PAGE,
   );
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <main className="px-6 space-y-5">
-        <div>
-          <h1 className="text-2xl font-extrabold text-ink">User Management</h1>
-          <p className="text-sm text-subtle mt-0.5">
-            Manage customers and beauty artists
-          </p>
-        </div>
+        {loading ? (
+          <UsersTableSkeleton />
+        ) : (
+          <>
+            <div>
+              <h1 className="text-2xl font-extrabold text-ink">
+                User Management
+              </h1>
+              <p className="text-sm text-subtle mt-0.5">
+                Manage customers and beauty artists
+              </p>
+            </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {MINI_STATS.map((s) => (
-            <Card key={s.label} className="p-4">
-              <p className={`text-xl font-extrabold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-subtle mt-1">{s.label}</p>
-            </Card>
-          ))}
-        </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {MINI_STATS.map((s) => (
+                <Card key={s.label} className="p-4">
+                  <p className={`text-xl font-extrabold ${s.color}`}>
+                    {s.value}
+                  </p>
+                  <p className="text-xs text-subtle mt-1">{s.label}</p>
+                </Card>
+              ))}
+            </div>
 
-        <Card className="p-3 flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              icon={<Search size={15} />}
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Search users by name or email..."
-            />
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => {
-                setShowRoleMenu(!showRoleMenu);
-                setShowStatusMenu(false);
-              }}
-              className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
-            >
-              Role
-              {roleFilter !== "All" && (
-                <span className="bg-brand-pinkDeep text-white text-[10px] px-2 py-0.5 rounded-full">
-                  {roleFilter}
-                </span>
-              )}
-              <ChevronDown size={14} className="text-subtle" />
-            </button>
-
-            {showRoleMenu && (
-              <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
-                {["All", "Customer", "Artist"].map((role) => (
-                  <button
-                    key={role}
-                    onClick={() => {
-                      setRoleFilter(role);
-                      setPage(1);
-                      setShowRoleMenu(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-muted "
-                  >
-                    {role === "All" ? "All Roles" : role}
-                  </button>
-                ))}
+            <Card className="p-3 flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <Input
+                  icon={<Search size={15} />}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Search users by name or email..."
+                />
               </div>
-            )}
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => {
-                setShowStatusMenu(!showStatusMenu);
-                setShowRoleMenu(false);
-              }}
-              className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
-            >
-              Status
-              {statusFilter !== "All" && (
-                <span className="bg-success text-white text-[10px] px-2 py-0.5 rounded-full">
-                  {statusFilter}
-                </span>
-              )}
-              <ChevronDown size={14} className="text-subtle" />
-            </button>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowRoleMenu(!showRoleMenu);
+                    setShowStatusMenu(false);
+                  }}
+                  className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
+                >
+                  Role
+                  {roleFilter !== "All" && (
+                    <span className="bg-brand-pinkDeep text-white text-[10px] px-2 py-0.5 rounded-full">
+                      {roleFilter}
+                    </span>
+                  )}
+                  <ChevronDown size={14} className="text-subtle" />
+                </button>
 
-            {showStatusMenu && (
-              <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
-                {["All", "Active", "Pending", "Suspended", "Paused"].map(
-                  (status) => (
-                    <button
-                      key={status}
-                      onClick={() => {
-                        setStatusFilter(status);
-                        setPage(1);
-                        setShowStatusMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2  rounded-lg text-xs font-semibold hover:bg-muted"
-                    >
-                      {status === "All" ? "All Status" : status}
-                    </button>
-                    
-                  ),
+                {showRoleMenu && (
+                  <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
+                    {["All", "Customer", "Artist"].map((role) => (
+                      <button
+                        key={role}
+                        onClick={() => {
+                          setRoleFilter(role);
+                          setPage(1);
+                          setShowRoleMenu(false);
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-muted "
+                      >
+                        {role === "All" ? "All Roles" : role}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        </Card>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowStatusMenu(!showStatusMenu);
+                    setShowRoleMenu(false);
+                  }}
+                  className="h-11 px-4 rounded-md border border-hairline bg-white flex items-center gap-2 text-sm font-semibold text-ink hover:bg-muted"
+                >
+                  Status
+                  {statusFilter !== "All" && (
+                    <span className="bg-success text-white text-[10px] px-2 py-0.5 rounded-full">
+                      {statusFilter}
+                    </span>
+                  )}
+                  <ChevronDown size={14} className="text-subtle" />
+                </button>
 
-        <Card className="p-0 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-[10px] uppercase tracking-wide text-subtle border-b border-hairline">
-                <th className="text-left font-bold px-5 py-3">User</th>
-                <th className="text-left font-bold px-2 py-3">Email</th>
-                <th className="text-left font-bold px-2 py-3">Phone</th>
-                <th className="text-left font-bold px-2 py-3">Role</th>
-                <th className="text-left font-bold px-2 py-3">Status</th>
-                <th className="text-left font-bold px-2 py-3">Bookings</th>
-                <th className="text-left font-bold px-2 py-3">Last Login</th>
-                <th className="text-left font-bold px-5 py-3">Joined</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedUsers.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="text-center py-10 text-sm text-subtle"
-                  >
-                    No users found
-                  </td>
-                </tr>
-              ) : (
-                paginatedUsers.map((u, i) => (
-                  <tr
-                    key={u.id}
-                    className="border-b border-hairline last:border-0 hover:bg-muted/50"
-                  >
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback
-                            className={`${AVATAR_COLORS[(page - 1) * ITEMS_PER_PAGE + (i % AVATAR_COLORS.length)]} text-ink`}
-                          >
-                            {u.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-xs font-bold text-ink leading-none">
-                            {u.name}
-                          </p>
-                          <p className="text-[10px] text-subtle mt-1">{u.id}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-2 py-3 text-xs text-subtle">{u.email}</td>
-                    <td className="px-2 py-3 text-xs text-subtle">{u.phone}</td>
-                    <td className="px-2 py-3">
-                      <Badge variant={ROLE_VARIANT[u.role]}>{u.role}</Badge>
-                    </td>
-                    <td className="px-2 py-3">
-                      <Badge variant={STATUS_VARIANT[u.status]}>
-                        {u.status}
-                      </Badge>
-                    </td>
-                    <td className="px-2 py-3 text-xs font-semibold text-ink">
-                      {u.bookings}
-                    </td>
-                    <td className="px-2 py-3 text-xs text-subtle">
-                      {u.lastLogin}
-                    </td>
-                    <td className="px-5 py-3 text-xs text-subtle">
-                      {u.joined}
-                    </td>
+                {showStatusMenu && (
+                  <div className="absolute top-12 left-0 w-40 bg-white border border-hairline rounded-xl shadow-lg z-50 p-2">
+                    {["All", "Active", "Pending", "Suspended", "Paused"].map(
+                      (status) => (
+                        <button
+                          key={status}
+                          onClick={() => {
+                            setStatusFilter(status);
+                            setPage(1);
+                            setShowStatusMenu(false);
+                          }}
+                          className="w-full text-left px-3 py-2  rounded-lg text-xs font-semibold hover:bg-muted"
+                        >
+                          {status === "All" ? "All Status" : status}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            <Card className="p-0 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-[10px] uppercase tracking-wide text-subtle border-b border-hairline">
+                    <th className="text-left font-bold px-5 py-3">User</th>
+                    <th className="text-left font-bold px-2 py-3">Email</th>
+                    <th className="text-left font-bold px-2 py-3">Phone</th>
+                    <th className="text-left font-bold px-2 py-3">Role</th>
+                    <th className="text-left font-bold px-2 py-3">Status</th>
+                    <th className="text-left font-bold px-2 py-3">Bookings</th>
+                    <th className="text-left font-bold px-2 py-3">
+                      Last Login
+                    </th>
+                    <th className="text-left font-bold px-5 py-3">Joined</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {paginatedUsers.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="text-center py-10 text-sm text-subtle"
+                      >
+                        No users found
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedUsers.map((u, i) => (
+                      <tr
+                        key={u.id}
+                        className="border-b border-hairline last:border-0 hover:bg-muted/50"
+                      >
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-2.5">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback
+                                className={`${AVATAR_COLORS[(page - 1) * ITEMS_PER_PAGE + (i % AVATAR_COLORS.length)]} text-ink`}
+                              >
+                                {u.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-xs font-bold text-ink leading-none">
+                                {u.name}
+                              </p>
+                              <p className="text-[10px] text-subtle mt-1">
+                                {u.id}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-2 py-3 text-xs text-subtle">
+                          {u.email}
+                        </td>
+                        <td className="px-2 py-3 text-xs text-subtle">
+                          {u.phone}
+                        </td>
+                        <td className="px-2 py-3">
+                          <Badge variant={ROLE_VARIANT[u.role]}>{u.role}</Badge>
+                        </td>
+                        <td className="px-2 py-3">
+                          <Badge variant={STATUS_VARIANT[u.status]}>
+                            {u.status}
+                          </Badge>
+                        </td>
+                        <td className="px-2 py-3 text-xs font-semibold text-ink">
+                          {u.bookings}
+                        </td>
+                        <td className="px-2 py-3 text-xs text-subtle">
+                          {u.lastLogin}
+                        </td>
+                        <td className="px-5 py-3 text-xs text-subtle">
+                          {u.joined}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
 
-          {/* <div className="flex items-center justify-between px-5 py-3.5 border-t border-hairline">
+              {/* <div className="flex items-center justify-between px-5 py-3.5 border-t border-hairline">
             <p className="text-xs text-subtle">Showing 10 of 10 users</p>
             <div className="flex items-center gap-1.5">
               <button className="w-8 h-8 rounded-md border border-hairline flex items-center justify-center text-subtle hover:bg-muted">
@@ -278,50 +301,108 @@ export default function UsersPage() {
               </button>
             </div>
           </div> */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-t border-hairline">
-            <p className="text-xs text-subtle">
-              Showing{" "}
-              {filteredUsers.length === 0 ? 0 : (page - 1) * ITEMS_PER_PAGE + 1}
-              {" - "}
-              {Math.min(page * ITEMS_PER_PAGE, filteredUsers.length)}
-              {" of "}
-              {filteredUsers.length} users
-            </p>
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-hairline">
+                <p className="text-xs text-subtle">
+                  Showing{" "}
+                  {filteredUsers.length === 0
+                    ? 0
+                    : (page - 1) * ITEMS_PER_PAGE + 1}
+                  {" - "}
+                  {Math.min(page * ITEMS_PER_PAGE, filteredUsers.length)}
+                  {" of "}
+                  {filteredUsers.length} users
+                </p>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-                className="w-8 h-8 rounded-md border border-hairline flex items-center justify-center text-subtle hover:bg-muted disabled:opacity-40"
-              >
-                <ChevronLeft size={14} />
-              </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="w-8 h-8 rounded-md border border-hairline flex items-center justify-center text-subtle hover:bg-muted disabled:opacity-40"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
 
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setPage(index + 1)}
-                  className={`w-8 h-8 rounded-md text-xs font-bold flex items-center justify-center ${
-                    page === index + 1
-                      ? "bg-brand-gradient text-white"
-                      : "border border-hairline text-ink hover:bg-muted"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setPage(index + 1)}
+                      className={`w-8 h-8 rounded-md text-xs font-bold flex items-center justify-center ${
+                        page === index + 1
+                          ? "bg-brand-gradient text-white"
+                          : "border border-hairline text-ink hover:bg-muted"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
 
-              <button
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-                className="w-8 h-8 rounded-md border border-hairline flex items-center justify-center text-subtle hover:bg-muted disabled:opacity-40"
-              >
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
-        </Card>
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="w-8 h-8 rounded-md border border-hairline flex items-center justify-center text-subtle hover:bg-muted disabled:opacity-40"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </Card>
+          </>
+        )}
       </main>
     </>
+  );
+}
+
+function UsersTableSkeleton() {
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div>
+        <Skeleton className="h-8 w-56 rounded-lg" />
+        <Skeleton className="mt-2 h-4 w-72 rounded-lg" />
+      </div>
+
+      {/* Mini stats */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 rounded-2xl" />
+        ))}
+      </div>
+
+      {/* Search + filter */}
+      <Skeleton className="h-20 rounded-2xl" />
+
+      {/* Table */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
+        {/* table header */}
+        <div className="flex gap-4 border-b px-5 py-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-3 flex-1" />
+          ))}
+        </div>
+
+        {/* rows */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 border-b px-5 py-4">
+            <Skeleton className="h-8 w-8 rounded-full" />
+
+            {Array.from({ length: 7 }).map((_, j) => (
+              <Skeleton key={j} className="h-4 flex-1" />
+            ))}
+          </div>
+        ))}
+
+        {/* pagination */}
+        <div className="flex justify-between px-5 py-4">
+          <Skeleton className="h-4 w-40" />
+
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-8 rounded-md" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

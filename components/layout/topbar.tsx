@@ -1,12 +1,7 @@
 import { Bell } from "lucide-react";
+import AccountDropdown from "../common/AccountDropdown";
 
-export function Topbar({
-  section,
-  page,
-}: {
-  section: string;
-  page: string;
-}) {
+export function Topbar({ section, page }: { section: string; page: string }) {
   return (
     <header className="h-16 border-b border-hairline bg-white/70 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-10">
       <div className="text-sm">
@@ -23,7 +18,7 @@ export function Topbar({
           </span>
         </button>
 
-        <div className="flex items-center gap-2.5 pl-4 border-l border-hairline">
+        {/* <div className="flex items-center gap-2.5 pl-4 border-l border-hairline">
           <div className="w-9 h-9 rounded-full bg-brand-gradient flex items-center justify-center text-white text-xs font-bold">
             AO
           </div>
@@ -33,6 +28,9 @@ export function Topbar({
             </p>
             <p className="text-[10px] text-subtle mt-1">Super Admin</p>
           </div>
+        </div> */}
+        <div className="pl-4 border-l border-hairline">
+          <AccountDropdown />
         </div>
       </div>
     </header>

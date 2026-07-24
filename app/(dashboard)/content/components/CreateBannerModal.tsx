@@ -8,7 +8,10 @@ interface CreateBannerModalProps {
   onCreate: (payload: Record<string, string>) => void;
 }
 
-export function CreateBannerModal({ onClose, onCreate }: CreateBannerModalProps) {
+export function CreateBannerModal({
+  onClose,
+  onCreate,
+}: CreateBannerModalProps) {
   const [form, setForm] = useState({
     title: "",
     subtitle: "",
@@ -25,16 +28,16 @@ export function CreateBannerModal({ onClose, onCreate }: CreateBannerModalProps)
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-ink/40 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl w-full max-w-md my-8 shadow-2xl">
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-hairline">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b">
           <h2 className="font-extrabold text-ink">Create Banner</h2>
           <button onClick={onClose} aria-label="Close" className="text-ink/60">
             <X size={18} />
           </button>
         </div>
 
-        <div className="px-6 py-6 space-y-5">
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5">
           <label className="block border-2 border-dashed border-rose-200 bg-rose-50/40 rounded-2xl py-8 text-center cursor-pointer">
             <input type="file" accept="image/*" className="hidden" />
             <div className="w-11 h-11 rounded-full bg-accent mx-auto flex items-center justify-center mb-3">
@@ -100,7 +103,7 @@ export function CreateBannerModal({ onClose, onCreate }: CreateBannerModalProps)
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 pb-6 pt-4 border-t border-hairline">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t">
           <button
             onClick={onClose}
             className="px-6 py-2.5 rounded-full border border-hairline text-sm font-semibold text-ink hover:bg-muted transition-colors"

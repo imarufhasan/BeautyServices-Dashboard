@@ -11,6 +11,7 @@ import { InspirationView } from "./components/InspirationView ";
 import { UploadImageModal } from "./components/UploadImageModal";
 import { AddCategoryModal } from "./components/AddCategoryModal";
 import { CreateBannerModal } from "./components/CreateBannerModal";
+import { Topbar } from "@/components/layout/topbar";
 
 const SUB_NAV: { id: ContentTab; label: string; icon: typeof Grid3x3 }[] = [
   { id: "banners", label: "Banners", icon: ImageIcon },
@@ -29,7 +30,9 @@ export default function ContentPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
-      <AdminTopbar breadcrumb={["Admin", "Content Management"]} />
+      {/* <AdminTopbar breadcrumb={["Admin", "Content Management"]} /> */}
+
+      <Topbar section="memillennial" page="Content" />
 
       <main className="flex-1 px-8 py-7">
         {activeTab !== "inspiration" && (
