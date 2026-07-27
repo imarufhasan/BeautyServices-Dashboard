@@ -201,10 +201,15 @@ export function RevenueChart() {
                 tick={{ fontSize: 11, fill: "#8A8590" }}
               />
               <Tooltip
-                formatter={(value: number, name: string) =>
+                // formatter={(value: number, name: string) =>
+                //   name === "revenue"
+                //     ? [`$${value.toLocaleString()}`, "Revenue"]
+                //     : [value.toLocaleString(), "Bookings"]
+                // }
+                formatter={(value, name) =>
                   name === "revenue"
-                    ? [`$${value.toLocaleString()}`, "Revenue"]
-                    : [value.toLocaleString(), "Bookings"]
+                    ? [`$${Number(value ?? 0).toLocaleString()}`, "Revenue"]
+                    : [Number(value ?? 0).toLocaleString(), "Bookings"]
                 }
                 contentStyle={{
                   borderRadius: 12,
