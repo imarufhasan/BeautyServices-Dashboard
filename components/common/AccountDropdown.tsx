@@ -52,7 +52,7 @@ export default function AccountDropdown() {
           </div>
 
 
-          <div className="p-2">
+          {/* <div className="p-2">
             {[
               "My Profile",
               "Account Settings",
@@ -66,7 +66,7 @@ export default function AccountDropdown() {
                 {item}
               </button>
             ))}
-          </div>
+          </div> */}
 
 
           <div className="border-t border-hairline p-2">

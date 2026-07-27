@@ -11,7 +11,6 @@ export type BookingStatus =
   | "In Progress"
   | "Completed"
   | "Cancelled"
-  | "Disputed";
 
   export type PaymentStatus =
   | "Paid"

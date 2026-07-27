@@ -51,7 +51,6 @@ const STATUS_TABS: ("All" | BookingStatus)[] = [
   "In Progress",
   "Completed",
   "Cancelled",
-  "Disputed",
 ];
 
 const STATUS_STYLES: Record<BookingStatus, string> = {
@@ -60,7 +59,6 @@ const STATUS_STYLES: Record<BookingStatus, string> = {
   Confirmed: "bg-sky-50 text-sky-600",
   "In Progress": "bg-violet-50 text-violet-600",
   Cancelled: "bg-slate-100 text-slate-500",
-  Disputed: "bg-rose-50 text-rose-600",
 };
 
 const PAYMENT_STYLES: Record<PaymentStatus, string> = {
@@ -385,13 +383,13 @@ export default function BookingManagement() {
                 value={counts.Cancelled}
                 label="Cancelled"
               />
-              <StatCard
+              {/* <StatCard
                 icon={AlertTriangle}
                 iconBg="bg-rose-300"
                 iconColor="text-white"
                 value={counts.Disputed}
                 label="Disputed"
-              />
+              /> */}
             </div>
 
             {/* Status tabs */}

@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Grid3x3, Image as ImageIcon, LayoutGrid } from "lucide-react";
+import {
+  Grid3x3,
+  Image as ImageIcon,
+  LayoutGrid,
+  HandCoins,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContentOverview, type ContentTab } from "./data";
 import { AdminTopbar } from "@/components/dashboard/admin-topbar";
@@ -12,11 +18,13 @@ import { UploadImageModal } from "./components/UploadImageModal";
 import { AddCategoryModal } from "./components/AddCategoryModal";
 import { CreateBannerModal } from "./components/CreateBannerModal";
 import { Topbar } from "@/components/layout/topbar";
+import { TravelFeeView } from "./components/TravelFeeView";
 
-const SUB_NAV: { id: ContentTab; label: string; icon: typeof Grid3x3 }[] = [
+const SUB_NAV: { id: ContentTab; label: string; icon: LucideIcon }[] = [
   { id: "banners", label: "Banners", icon: ImageIcon },
   { id: "categories", label: "Categories", icon: Grid3x3 },
   { id: "inspiration", label: "Beauty Inspiration Add", icon: LayoutGrid },
+  { id: "travel-fee", label: "Travel Fee & Commission", icon: HandCoins },
 ];
 
 export default function ContentPage() {
@@ -88,12 +96,14 @@ export default function ContentPage() {
                 onAddBanner={() => setShowBannerModal(true)}
               />
             )}
+
             {activeTab === "categories" && (
               <CategoriesView
                 categories={content.categories}
                 onAddCategory={() => setShowCategoryModal(true)}
               />
             )}
+
             {activeTab === "inspiration" && (
               <>
                 <div className="mb-4">
@@ -104,12 +114,15 @@ export default function ContentPage() {
                     ← Back to Content Management
                   </button>
                 </div>
+
                 <InspirationView
                   images={content.inspirationImages}
                   onUpload={() => setShowUploadModal(true)}
                 />
               </>
             )}
+
+            {activeTab === "travel-fee" && <TravelFeeView />}
           </div>
         </div>
 

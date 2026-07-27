@@ -1,7 +1,7 @@
 // Shape mirrors what a `/api/admin/content` endpoint would return.
 // Swap `getContentOverview()` for a real fetch() call when the API is ready.
 
-export type ContentTab = "banners" | "categories" | "inspiration";
+export type ContentTab = "banners" | "categories" | "inspiration" | "travel-fee";
 
 export interface Banner {
   id: string;

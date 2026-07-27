@@ -40,7 +40,6 @@ const STATUS_STYLES: Record<BookingStatus, string> = {
   Confirmed: "bg-sky-50 text-sky-600",
   "In Progress": "bg-violet-50 text-violet-600",
   Cancelled: "bg-slate-100 text-slate-500",
-  Disputed: "bg-rose-50 text-rose-600",
 };
 
 const TIMELINE_STEPS = [
@@ -65,8 +64,6 @@ function completedStepsFor(status: BookingStatus): number {
     case "Completed":
       return 5;
     case "Cancelled":
-    case "Disputed":
-      return 2;
     default:
       return 1;
   }

@@ -369,9 +369,9 @@ export default function VerificationDetailPage() {
               >
                 ✗ Reject Verification
               </Button>
-              <Button variant="ghost" className="w-full">
+              {/* <Button variant="ghost" className="w-full">
                 ⚠️ Request More Information
-              </Button>
+              </Button> */}
             </div>
           </Card>
         </div>
