@@ -1,25 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Clock,
-  CheckCircle2,
-  XCircle,
-  FileText,
-  Wallet,
-  AlertTriangle,
-  Eye,
-  MoreVertical,
-} from "lucide-react";
+import { Clock, FileText, Wallet, Eye, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { StatCard } from "@/components/dashboard/stat-card2";
 import {
+  DATE_RANGE_FILTERS,
   getRefundOverview,
   REFUND_STATUS_FILTERS,
-  DATE_RANGE_FILTERS,
-  type RefundStatus,
+  RefundStatus,
 } from "./data";
-import { AdminTopbar } from "@/components/dashboard/admin-topbar";
-import { StatCard } from "@/components/dashboard/stat-card2";
+import Link from "next/link";
 import { Topbar } from "@/components/layout/topbar";
 
 function formatCurrency(amount: number, currency: string) {
@@ -41,30 +33,40 @@ const STATUS_STYLES: Record<RefundStatus, string> = {
   Processing: "bg-blue-50 text-blue-600",
 };
 
-const TYPE_STYLES: Record<string, string> = {
-  Full: "text-blue-600",
-  Partial: "text-orange-500",
-  "Wallet Credit": "text-emerald-600",
-};
-
 export default function RefundsPage() {
-  // In production this comes from `await fetch("/api/admin/refunds")`.
   const { stats, records } = useMemo(() => getRefundOverview(), []);
+  const ITEMS_PER_PAGE = 10;
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] =
     useState<(typeof REFUND_STATUS_FILTERS)[number]>("All");
   const [dateFilter, setDateFilter] =
     useState<(typeof DATE_RANGE_FILTERS)[number]>("Last 7 days");
 
   const filteredRecords = useMemo(() => {
-    if (statusFilter === "All") return records;
-    return records.filter((r) => r.status === statusFilter);
+    let filtered = records;
+
+    if (statusFilter !== "All") {
+      filtered = filtered.filter((r) => r.status === statusFilter);
+    }
+
+    return filtered;
   }, [records, statusFilter]);
+
+  //  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredRecords.length / ITEMS_PER_PAGE),
+  );
+
+  const paginatedRecords = filteredRecords.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
- 
-      <Topbar section="memillennial" page="Cancellation & Refund" />
+      <Topbar section="Cancellation & Refund" page="Refund" />
 
       <main className="flex-1 px-8 py-7 space-y-6">
         <div>
@@ -76,32 +78,8 @@ export default function RefundsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-          <StatCard
-            icon={Clock}
-            iconClassName="bg-orange-400"
-            value={String(stats.pendingRefunds)}
-            label="Pending Refunds"
-          />
-          <StatCard
-            icon={CheckCircle2}
-            iconClassName="bg-emerald-500"
-            value={String(stats.approvedRefunds.count)}
-            label="Approved Refunds"
-            trend={{ direction: "up", value: stats.approvedRefunds.trend }}
-          />
-          <StatCard
-            icon={XCircle}
-            iconClassName="bg-slate-400"
-            value={String(stats.rejectedRefunds)}
-            label="Rejected Refunds"
-          />
-          <StatCard
-            icon={FileText}
-            iconClassName="bg-rose-400"
-            value={String(stats.cancellationRequests)}
-            label="Cancellation Requests"
-          />
+        {/* Showing only Pending Refunds, Total Refund Value, and Cancellation Requests */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard
             icon={Wallet}
             iconClassName="bg-pink-300"
@@ -113,10 +91,17 @@ export default function RefundsPage() {
             trend={{ direction: "down", value: stats.totalRefundValue.trend }}
           />
           <StatCard
-            icon={AlertTriangle}
-            iconClassName="bg-amber-400"
-            value={String(stats.compensationRequests)}
-            label="Compensation Requests"
+            icon={Clock}
+            iconClassName="bg-orange-400"
+            value={String(stats.pendingRefunds)}
+            label="Pending Refunds"
+          />
+
+          <StatCard
+            icon={FileText}
+            iconClassName="bg-rose-400"
+            value={String(stats.cancellationRequests)}
+            label="Cancellation Requests"
           />
         </div>
 
@@ -128,7 +113,10 @@ export default function RefundsPage() {
             {REFUND_STATUS_FILTERS.map((status) => (
               <button
                 key={status}
-                onClick={() => setStatusFilter(status)}
+                onClick={() => {
+                  setStatusFilter(status);
+                  setCurrentPage(1);
+                }}
                 className={cn(
                   "text-xs font-semibold px-3.5 py-1.5 rounded-full transition-colors",
                   statusFilter === status
@@ -146,7 +134,10 @@ export default function RefundsPage() {
             {DATE_RANGE_FILTERS.map((range) => (
               <button
                 key={range}
-                onClick={() => setDateFilter(range)}
+                onClick={() => {
+                  setDateFilter(range);
+                  setCurrentPage(1);
+                }}
                 className={cn(
                   "text-xs font-semibold px-3.5 py-1.5 rounded-full transition-colors",
                   dateFilter === range
@@ -171,14 +162,13 @@ export default function RefundsPage() {
                   <th className="text-left px-6 py-3.5">Artist</th>
                   <th className="text-left px-6 py-3.5">Original Amount</th>
                   <th className="text-left px-6 py-3.5">Refund Amount</th>
-                  <th className="text-left px-6 py-3.5">Type</th>
                   <th className="text-left px-6 py-3.5">Status</th>
                   <th className="text-left px-6 py-3.5">Requested Date</th>
                   <th className="text-left px-6 py-3.5">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredRecords.map((r) => (
+                {paginatedRecords.map((r) => (
                   <tr
                     key={r.refundId}
                     className="border-b border-hairline last:border-0 hover:bg-muted/40 transition-colors"
@@ -191,7 +181,7 @@ export default function RefundsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[11px] font-bold text-ink/70">
+                        <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-[11px] font-bold">
                           {r.customer.initials}
                         </div>
                         <div>
@@ -211,14 +201,7 @@ export default function RefundsPage() {
                     <td className="px-6 py-4 font-semibold text-rose-500">
                       {formatCurrency(r.refundAmount, r.currency)}
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={cn("font-semibold", TYPE_STYLES[r.type])}
-                      >
-                        {r.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 justify-center">
                       <span
                         className={cn(
                           "text-xs font-bold px-3 py-1 rounded-full",
@@ -232,13 +215,17 @@ export default function RefundsPage() {
                       {formatDate(r.requestedDate)}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3 text-subtle">
-                        <button aria-label="View" className="hover:text-ink">
+                      <div className="flex items-center justify-center text-subtle">
+                        <Link
+                          href={`/refunds/${r.refundId}`}
+                          aria-label="View refund details"
+                          className="hover:text-ink"
+                        >
                           <Eye size={16} />
-                        </button>
-                        <button aria-label="More" className="hover:text-ink">
+                        </Link>
+                        {/* <button aria-label="More" className="hover:text-ink">
                           <MoreVertical size={16} />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -248,15 +235,44 @@ export default function RefundsPage() {
           </div>
 
           <div className="flex items-center justify-between px-6 py-4 border-t border-hairline">
+            {/* <p className="text-xs text-subtle">
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredRecords.length)}{" "}
+              of {filteredRecords.length} results
+            </p> */}
             <p className="text-xs text-subtle">
-              Showing 1–{filteredRecords.length} of {records.length} results
+              {filteredRecords.length > 0 ? (
+                <>
+                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
+                  {Math.min(
+                    currentPage * ITEMS_PER_PAGE,
+                    filteredRecords.length,
+                  )}{" "}
+                  of {filteredRecords.length} results
+                </>
+              ) : (
+                "No results found"
+              )}
             </p>
+
             <div className="flex items-center gap-2">
-              <button className="w-7 h-7 rounded-full border border-hairline flex items-center justify-center text-subtle disabled:opacity-40">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                className="w-7 h-7 rounded-full border border-hairline flex items-center justify-center text-subtle disabled:opacity-40"
+              >
                 ‹
               </button>
-              <span className="text-xs font-semibold text-ink px-2">1 / 1</span>
-              <button className="w-7 h-7 rounded-full border border-hairline flex items-center justify-center text-subtle disabled:opacity-40">
+
+              <span className="text-xs font-semibold text-ink px-2">
+                {currentPage} / {totalPages}
+              </span>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                className="w-7 h-7 rounded-full border border-hairline flex items-center justify-center text-subtle disabled:opacity-40"
+              >
                 ›
               </button>
             </div>
